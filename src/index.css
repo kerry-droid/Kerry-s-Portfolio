@@ -1,0 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+body { @apply bg-ink text-stone-100; }
+::selection { @apply bg-lime text-neutral-950; }
