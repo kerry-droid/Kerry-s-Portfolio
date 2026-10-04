@@ -163,3 +163,30 @@ body.resume-preview-open{overflow:hidden}
 .portfolio-shell .brand .brand-dot{color:#6258f5}
 @keyframes brand-letter-bounce{0%,72%,100%{transform:translateY(0)}78%{transform:translateY(-5px)}84%{transform:translateY(1px)}90%{transform:translateY(-2px)}96%{transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){.portfolio-shell .brand .brand-letter{animation:none}}
+
+/* Contact section styled as the paired information and message cards. */
+.portfolio-shell .contact-section{padding-top:76px;padding-bottom:88px}
+.portfolio-shell .contact-grid{grid-template-columns:1fr 1fr;align-items:start;gap:32px}
+.portfolio-shell .contact-card{padding:32px;border:1px solid var(--line);border-radius:24px;background:var(--surface);box-shadow:0 12px 22px #26314b16}
+.portfolio-shell .contact-card h2{margin:0 0 24px;font-size:24px;line-height:1.3;letter-spacing:-.035em;font-weight:750;background:linear-gradient(100deg,#326df2,#7646e8);-webkit-background-clip:text;background-clip:text;color:transparent}
+.portfolio-shell .contact-info-card .contact-details{display:grid;gap:16px;margin:0}
+.portfolio-shell .contact-info-card .contact-details>a,.portfolio-shell .contact-detail{width:auto;display:flex;align-items:center;gap:16px;color:var(--ink);font-size:14px}
+.portfolio-shell .contact-info-card .contact-details>a>span:last-child,.portfolio-shell .contact-detail>span:last-child{display:grid;gap:0}
+.portfolio-shell .contact-info-card .contact-details small,.portfolio-shell .contact-detail small{margin:0;color:var(--muted-ink);font-family:var(--sans);font-size:14px;letter-spacing:0}
+.portfolio-shell .contact-info-card .contact-details strong,.portfolio-shell .contact-detail strong{font-size:16px;font-weight:550;line-height:1.5}
+.contact-icon-box{width:48px;height:48px;flex:0 0 48px;display:grid;place-items:center;border:1px solid var(--line);border-radius:13px;background:var(--surface-solid);color:#386cf4;box-shadow:0 7px 12px #22252d13}
+.contact-icon{width:21px;height:21px}
+.contact-social{margin-top:29px;padding-top:29px;border-top:1px solid var(--line)}
+.portfolio-shell .contact-social h3{margin:0 0 15px;color:var(--ink);font-size:16px;font-weight:700}
+.contact-social>div{display:flex;gap:14px}
+.contact-social a{width:48px;height:48px;display:grid;place-items:center;border:1px solid var(--line);border-radius:13px;background:var(--surface-solid);color:var(--ink);box-shadow:0 7px 12px #22252d13;transition:transform .2s,color .2s,border-color .2s}
+.contact-social a:hover{transform:translateY(-2px);color:#4567e9;border-color:#aabaf5}
+.portfolio-shell .contact-form-card{display:flex;flex-direction:column;align-items:stretch;gap:0}
+.portfolio-shell .contact-form-card h2{margin-bottom:24px}
+.portfolio-shell .contact-form-card label{margin:0 0 7px;color:var(--ink);font-family:var(--sans);font-size:14px;font-weight:500}
+.portfolio-shell .contact-form-card input,.portfolio-shell .contact-form-card textarea{width:100%;margin:0 0 16px;padding:13px 16px;border:1px solid var(--line);border-radius:13px;background:var(--surface-solid);color:var(--ink);font-family:var(--sans);font-size:15px;box-shadow:0 6px 10px #22252d12}
+.portfolio-shell .contact-form-card textarea{min-height:146px;resize:vertical}
+.portfolio-shell .contact-form-card input::placeholder,.portfolio-shell .contact-form-card textarea::placeholder{color:#969cac}
+.portfolio-shell .contact-form-card input:focus,.portfolio-shell .contact-form-card textarea:focus{border-color:#758ef0;box-shadow:0 0 0 3px #6582f01b;outline:none}
+.portfolio-shell .contact-form-card .button{width:100%;min-height:48px;justify-content:center;margin-top:4px;border-radius:12px;font-size:15px}
+@media(max-width:760px){.portfolio-shell .contact-section{padding-top:58px;padding-bottom:64px}.portfolio-shell .contact-grid{grid-template-columns:1fr;gap:20px}.portfolio-shell .contact-card{padding:25px;border-radius:20px}}
