@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 
 const fadeUp = {
@@ -49,8 +49,68 @@ function ProjectArt({ kind, art }) {
   </div>
 }
 
+function ResumePreview({ onClose }) {
+  const [zoom, setZoom] = useState(56)
+  useEffect(() => {
+    const onKeyDown = (event) => { if (event.key === 'Escape') onClose() }
+    document.addEventListener('keydown', onKeyDown)
+    document.body.classList.add('resume-preview-open')
+    return () => { document.removeEventListener('keydown', onKeyDown); document.body.classList.remove('resume-preview-open') }
+  }, [onClose])
+  const download = () => window.print()
+  return <div className="resume-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose() }}>
+    <section className="pdf-viewer" role="dialog" aria-modal="true" aria-label="Resume preview">
+      <div className="pdf-toolbar">
+        <button aria-label="Toggle page thumbnails" title="Page thumbnails" className="pdf-menu">☰</button>
+        <strong className="pdf-filename">Kerry_Opiyo_Resume.pdf</strong>
+        <span className="pdf-page-count">1 <i>/</i> 1</span>
+        <span className="pdf-divider" />
+        <button aria-label="Zoom out" onClick={() => setZoom((value) => Math.max(35, value - 10))}>−</button>
+        <span className="pdf-zoom">{zoom}%</span>
+        <button aria-label="Zoom in" onClick={() => setZoom((value) => Math.min(100, value + 10))}>＋</button>
+        <span className="pdf-divider" />
+        <button title="Fit page" aria-label="Fit page" onClick={() => setZoom(56)}>▣</button>
+        <button title="Download resume" aria-label="Download resume" onClick={download}>↓</button>
+        <button title="Print resume" aria-label="Print resume" onClick={download}>▤</button>
+        <button className="pdf-close" aria-label="Close resume preview" onClick={onClose}>×</button>
+      </div>
+      <div className="pdf-workspace">
+        <aside className="pdf-thumbnails"><button className="pdf-thumbnail" aria-label="Page 1"><ResumePage compact /><span>1</span></button></aside>
+        <div className="pdf-canvas"><div className="pdf-page-wrap" style={{ width: `${Math.min(100, zoom / 56 * 100)}%` }}><ResumePage /></div></div>
+      </div>
+    </section>
+  </div>
+}
+
+function ResumePage({ compact = false }) {
+  return <article className={`resume-paper ${compact ? 'resume-paper-small' : ''}`}>
+    <header><h2>KERRY OPIYO</h2><strong>JUNIOR SOFTWARE DEVELOPER | FULL-STACK WEB DEVELOPER</strong><p>Nairobi, Kenya&nbsp; | &nbsp;0725 041 243&nbsp; | &nbsp;kerryopiyo6@gmail.com</p><p>github.com/kerry-droid&nbsp; | &nbsp;instagram.com/void_kerry</p></header>
+    <section><h3>PROFESSIONAL SUMMARY</h3><p>Motivated junior software developer trained in practical full-stack web development. Experienced in building responsive applications, REST APIs and database-driven products, with a focus on reliable, user-friendly software.</p></section>
+    <section><h3>CORE TECHNICAL SKILLS</h3><p><b>Frontend:</b> HTML, CSS, JavaScript, React, Tailwind CSS, React Router<br/><b>Backend:</b> Python, Flask, REST APIs, authentication and authorization<br/><b>Data:</b> SQL, PostgreSQL, SQLite, SQLAlchemy, json-server<br/><b>Tools:</b> Git, GitHub, Vite, npm, Linux, Pytest, Mocha, Chai</p></section>
+    <section><h3>SELECTED PROJECTS</h3>
+      <h4>Movie Hub | React Web Application</h4><p>Built a movie discovery application with TMDB API integration, reusable React components, search, browsing, routing and responsive styling.</p>
+      <h4>Nairobi Prime Homes | Real Estate Web Application</h4><p>Developed a property listing application with reusable UI, forms, routing and json-server API integration.</p>
+      <h4>Task Manager CLI | Python Application</h4><p>Created a command-line project management tool with object-oriented models, structured data and automated pytest tests.</p>
+      <h4>SokoCredit | Loan Management System</h4><p>Designed a full-stack loan management application concept for customer records, disbursements, repayments and analytics.</p>
+    </section>
+    <section><h3>EDUCATION &amp; TRAINING</h3><h4>Moringa School | Software Development</h4><p>February 2026 – September 2026<br/>Practical training in JavaScript, React, Python, Flask, SQL, REST APIs, testing and full-stack development.</p></section>
+    <section><h3>PROFESSIONAL STRENGTHS</h3><p>Problem-solving · Teamwork · Communication · Adaptability · Continuous learning · Time management · Attention to detail</p></section>
+    <section><h3>CAREER OBJECTIVE</h3><p>Seeking an entry-level software development opportunity to contribute to real products, learn from experienced developers and grow as a full-stack engineer.</p></section>
+  </article>
+}
+
+function Brand() {
+  const name = 'KERRY'
+  return <a className="brand" href="#home" aria-label="Kerry Dev, home">
+    {Array.from(name, (letter, index) => <span className="brand-letter" style={{ '--letter-index': index }} key={index}>{letter}</span>)}
+    <span className="brand-suffix"><span className="brand-letter brand-dot" style={{ '--letter-index': 5 }}>.</span>{Array.from('DEV', (letter, index) => <span className="brand-letter" style={{ '--letter-index': index + 6 }} key={index}>{letter}</span>)}</span>
+  </a>
+}
+
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [darkMode, setDarkMode] = useState(false)
+  const [resumeOpen, setResumeOpen] = useState(false)
   const closeMenu = () => setMenuOpen(false)
   const sendMessage = (event) => {
     event.preventDefault()
@@ -60,15 +120,15 @@ export default function App() {
     window.location.href = `mailto:kerryopiyo6@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
   }
 
-  return <div className="min-h-screen bg-ink text-stone-100">
+  return <div className={`portfolio-shell min-h-screen ${darkMode ? 'theme-dark' : 'theme-light'}`}>
     <header className="site-header">
-      <a className="brand" href="#home" aria-label="Kerry Dev, home">KERRY<span>.DEV</span></a>
+      <Brand />
       <button className="menu-toggle" aria-label={menuOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}><span /><span /></button>
-      <nav className={`nav ${menuOpen ? 'open' : ''}`} aria-label="Main navigation">{[['About', '#about'], ['Skills', '#skills'], ['Projects', '#projects'], ['What I do', '#experience'], ['Contact', '#contact']].map(([label, href]) => <a key={label} href={href} onClick={closeMenu}>{label}</a>)}<a className="nav-cta" href="#resume" onClick={closeMenu}>Resume <span>↗</span></a></nav>
+      <nav className={`nav ${menuOpen ? 'open' : ''}`} aria-label="Main navigation">{[['About', '#about'], ['Projects', '#projects'], ['Skills', '#skills'], ['Experience', '#experience'], ['Contact', '#contact']].map(([label, href]) => <a key={label} href={href} onClick={closeMenu}>{label}</a>)}<button className="theme-toggle" type="button" aria-label={`Switch to ${darkMode ? 'light' : 'dark'} theme`} onClick={() => setDarkMode(!darkMode)}>{darkMode ? '☀' : '☾'}</button></nav>
     </header>
 
     <main>
-      <section className="hero wrap" id="home"><motion.div className="hero-copy" initial="hidden" animate="visible" variants={fadeUp}><p className="eyebrow"><span className="status-dot" /> AVAILABLE FOR OPPORTUNITIES</p><p className="intro">HELLO, I'M</p><h1>Kerry<br /><span>Opiyo.</span></h1><h2>Junior Software Developer | Full-Stack Web Developer</h2><p className="hero-text">I build modern web applications that solve real-world problems using React, Python and PostgreSQL.</p><div className="hero-actions"><a className="button button-primary" href="#projects">View my projects <span>↘</span></a><a className="button button-quiet" href="#resume">Explore my background <span>↗</span></a></div><a className="github-link" href="https://github.com/kerry-droid" target="_blank" rel="noreferrer"><span className="github-mark">GH</span> github.com/kerry-droid <span>↗</span></a></motion.div><Terminal /><div className="hero-index">01 <span>—</span> 06</div></section>
+      <section className="hero wrap" id="home"><motion.div className="hero-copy" initial="hidden" animate="visible" variants={fadeUp}><div className="portrait-mark" aria-hidden="true">KO</div><p className="eyebrow"><span className="status-dot" /> AVAILABLE FOR OPPORTUNITIES</p><p className="intro">HELLO, I'M</p><h1>Kerry Opiyo<span>.</span></h1><h2>Junior Software Developer <b>|</b> Full-Stack Web Developer</h2><p className="hero-text">I build modern web applications that solve real-world problems using React, Python and PostgreSQL.</p><div className="hero-actions"><a className="button button-primary" href="#projects">View my work <span>↘</span></a><button className="button button-quiet" type="button" onClick={() => setResumeOpen(true)}>Preview resume <span>↗</span></button><button className="button button-quiet" type="button" onClick={() => window.print()}>Download resume <span>↓</span></button></div><a className="github-link" href="https://github.com/kerry-droid" target="_blank" rel="noreferrer"><span className="github-mark">GH</span> github.com/kerry-droid <span>↗</span></a></motion.div><Terminal /><div className="hero-index">SCROLL TO EXPLORE <span>↓</span></div></section>
 
       <motion.section {...sectionMotion} className="about section wrap" id="about"><SectionLabel>01 / ABOUT</SectionLabel><div className="about-grid"><h2>Practical software.<br /><span>Thoughtful solutions.</span></h2><div><p className="lead">I'm a developer focused on building useful software for real people and businesses.</p><p>I enjoy working across the frontend and backend: creating responsive interfaces, APIs and database-driven applications. My current focus is growing as a full-stack developer and turning complex workflows into tools people can actually use.</p><a className="text-link" href="#contact">A little more about working together <span>↘</span></a></div></div><div className="stats"><div><strong className="stat-words">Full-stack</strong><small>FRONTEND TO BACKEND</small></div><div><strong className="stat-words">React + Python</strong><small>CORE TOOLKIT</small></div><div><strong className="stat-words">Always learning</strong><small>GROWING EVERY DAY</small></div></div></motion.section>
 
@@ -78,18 +138,10 @@ export default function App() {
 
       <motion.section {...sectionMotion} className="section wrap" id="experience"><SectionLabel>04 / CAPABILITIES</SectionLabel><div className="section-heading"><h2>What I do</h2><p>From the first screen to the data behind it.</p></div><div className="services-grid">{services.map(([num, title, text]) => <article key={num}><span>{num}</span><h3>{title}</h3><p>{text}</p><b>↗</b></article>)}</div></motion.section>
 
-      <section className="resume-band" id="resume"><motion.div {...sectionMotion} className="wrap resume-inner"><div className="resume-heading"><p className="eyebrow">05 / RESUME</p><h2>Kerry<br /><span>Opiyo.</span></h2><p className="resume-role">Junior Software Developer | Full-Stack Web Developer</p><div className="resume-contact"><a href="tel:+254725041243">0725 041 243</a><a href="https://wa.me/254725041243" target="_blank" rel="noreferrer">WhatsApp: 0725 041 243 ↗</a><a href="mailto:kerryopiyo6@gmail.com">kerryopiyo6@gmail.com</a><span>Nairobi, Kenya</span><a href="https://github.com/kerry-droid" target="_blank" rel="noreferrer">github.com/kerry-droid ↗</a><a href="https://www.instagram.com/void_kerry/" target="_blank" rel="noreferrer">instagram.com/void_kerry ↗</a></div></div><div className="resume-content">
-        <section><h3>Professional summary</h3><p>Motivated junior software developer trained in practical full-stack web development. Experienced in building responsive web applications, consuming REST APIs, working with databases, implementing authentication and routing, debugging applications, and deploying projects. Strong problem-solving mindset with a willingness to learn, collaborate, and build reliable user-focused software.</p></section>
-        <section><h3>Projects</h3><article><h4>Movie Hub <span>— React Web Application</span></h4><p>Built a movie discovery application using React and the TMDB API. Implemented reusable components, React Router navigation, API data fetching, search and browsing functionality, responsive Tailwind CSS styling, and environment-based API configuration.</p></article><article><h4>Nairobi Prime Homes <span>— Real Estate Web Application</span></h4><p>Developed a React real estate application for displaying and managing property listings, with routing, reusable UI components, forms, json-server API integration, and deployment workflows.</p></article><article><h4>Task Manager CLI <span>— Python Application</span></h4><p>Built a command-line project management tool using Python and object-oriented programming. Designed user, project, and task models with structured data storage and automated pytest tests.</p></article><article><h4>SokoCredit <span>— Loan Management System</span></h4><p>Designed a full-stack loan management concept for microfinance lenders serving small-scale traders, covering customer management, loan disbursement, repayments, analytics, and role-based admin and customer workflows.</p></article></section>
-        <section><h3>Education &amp; training</h3><article><h4>Moringa School <span>— Software Development</span></h4><p>February 2026 – September 2026</p><p>Practical training in frontend and backend development, JavaScript, React, Python, Flask, SQL, REST APIs, testing, Git/GitHub, and full-stack application development.</p></article></section>
-        <section><h3>Soft skills</h3><p>Problem-solving · Teamwork · Communication · Adaptability · Continuous learning · Time management · Debugging and troubleshooting · Attention to detail</p></section>
-        <section><h3>Career objective</h3><p>Seeking an entry-level software development opportunity where I can apply my technical skills, contribute to real-world products, learn from experienced developers, and grow into a strong full-stack software engineer.</p></section>
-        <a className="button button-primary resume-email" href="mailto:kerryopiyo6@gmail.com?subject=Let's%20talk">Get in touch <span>↗</span></a>
-      </div></motion.div></section>
-
-      <motion.section {...sectionMotion} className="section wrap contact-section" id="contact"><SectionLabel>06 / CONTACT</SectionLabel><div className="contact-grid"><div><p className="eyebrow">HAVE A PROJECT?</p><h2>Let's work<br /><span>together.</span></h2><p className="contact-intro">I'm open to opportunities, collaborations and interesting software projects.</p><div className="contact-details"><a href="mailto:kerryopiyo6@gmail.com"><small>EMAIL</small>kerryopiyo6@gmail.com <span>↗</span></a><a href="tel:+254725041243"><small>PHONE</small>0725 041 243 <span>↗</span></a><a href="https://wa.me/254725041243" target="_blank" rel="noreferrer"><small>WHATSAPP</small>0725 041 243 <span>↗</span></a><a href="https://www.instagram.com/void_kerry/" target="_blank" rel="noreferrer"><small>INSTAGRAM</small>@void_kerry <span>↗</span></a><a href="https://github.com/kerry-droid" target="_blank" rel="noreferrer"><small>GITHUB</small>github.com/kerry-droid <span>↗</span></a></div></div><form onSubmit={sendMessage}><label htmlFor="name">Name</label><input id="name" name="name" placeholder="Your name" required /><label htmlFor="email">Email</label><input id="email" name="email" type="email" placeholder="you@example.com" required /><label htmlFor="message">Message</label><textarea id="message" name="message" placeholder="Tell me a little about your project..." rows="4" required /><button className="button button-primary" type="submit">Send message <span>↗</span></button><p className="form-note">Your email app will open with the message ready to send.</p></form></div></motion.section>
+      <motion.section {...sectionMotion} className="section wrap contact-section" id="contact"><SectionLabel>05 / CONTACT</SectionLabel><div className="contact-grid"><div><p className="eyebrow">HAVE A PROJECT?</p><h2>Let's work<br /><span>together.</span></h2><p className="contact-intro">I'm open to opportunities, collaborations and interesting software projects.</p><div className="contact-details"><a href="mailto:kerryopiyo6@gmail.com"><small>EMAIL</small>kerryopiyo6@gmail.com <span>↗</span></a><a href="tel:+254725041243"><small>PHONE</small>0725 041 243 <span>↗</span></a><a href="https://wa.me/254725041243" target="_blank" rel="noreferrer"><small>WHATSAPP</small>0725 041 243 <span>↗</span></a><a href="https://www.instagram.com/void_kerry/" target="_blank" rel="noreferrer"><small>INSTAGRAM</small>@void_kerry <span>↗</span></a><a href="https://github.com/kerry-droid" target="_blank" rel="noreferrer"><small>GITHUB</small>github.com/kerry-droid <span>↗</span></a></div></div><form onSubmit={sendMessage}><label htmlFor="name">Name</label><input id="name" name="name" placeholder="Your name" required /><label htmlFor="email">Email</label><input id="email" name="email" type="email" placeholder="you@example.com" required /><label htmlFor="message">Message</label><textarea id="message" name="message" placeholder="Tell me a little about your project..." rows="4" required /><button className="button button-primary" type="submit">Send message <span>↗</span></button><p className="form-note">Your email app will open with the message ready to send.</p></form></div></motion.section>
     </main>
 
-    <footer className="footer"><div className="wrap"><div className="footer-top"><a className="brand" href="#home">KERRY<span>.DEV</span></a><p>Full-Stack Developer</p><div><a href="https://github.com/kerry-droid" target="_blank" rel="noreferrer">GitHub ↗</a><a href="mailto:kerryopiyo6@gmail.com">Email ↗</a><a href="https://wa.me/254725041243" target="_blank" rel="noreferrer">WhatsApp ↗</a><a href="https://www.instagram.com/void_kerry/" target="_blank" rel="noreferrer">Instagram ↗</a><a href="#projects">Projects ↗</a></div></div><div className="footer-bottom"><span>© 2026 Kerry Opiyo.</span><a href="#home">Back to top ↑</a></div></div></footer>
+    <footer className="footer"><div className="wrap"><div className="footer-top"><Brand /><p>Full-Stack Developer</p><div><a href="https://github.com/kerry-droid" target="_blank" rel="noreferrer">GitHub ↗</a><a href="mailto:kerryopiyo6@gmail.com">Email ↗</a><a href="https://wa.me/254725041243" target="_blank" rel="noreferrer">WhatsApp ↗</a><a href="https://www.instagram.com/void_kerry/" target="_blank" rel="noreferrer">Instagram ↗</a><a href="#projects">Projects ↗</a></div></div><div className="footer-bottom"><span>© 2026 Kerry Opiyo.</span><a href="#home">Back to top ↑</a></div></div></footer>
+    {resumeOpen && <ResumePreview onClose={() => setResumeOpen(false)} />}
   </div>
 }
